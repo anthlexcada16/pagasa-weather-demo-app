@@ -7,18 +7,20 @@ services:
       POSTGRES_USER: pagasa
       POSTGRES_PASSWORD: pagasa
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgress_data:/var/lib/postgresql/
+    restart: unless-stopped
 
   redis:
     image: redis:8
     container_name: pagasa-redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
+    restart: unless-stopped
 
   backend:
-    build: ./backend
+    image: pagasa-weather-demo-app-backend:latest
     container_name: pagasa-backend
     volumes:
       - ./backend/data:/app/data
@@ -38,14 +40,16 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_DB: 0
+    restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    image: pagasa-weather-demo-app-frontend:latest
     container_name: pagasa-frontend
     ports:
-      - "3000:80"
+      - "80:80"
     depends_on:
       - backend
+    restart: unless-stopped
 
 volumes:
   postgress_data:
